@@ -43,6 +43,14 @@ class UI(val binding: LogActivityBinding) {
                 }
             }
         }
+
+        // additional UT61-C flag indicators
+        enableTextView(binding.HOLD, ut61e.isHold())
+        enableTextView(binding.REL, ut61e.isRel())
+        enableTextView(binding.MIN, ut61e.isMin())
+        enableTextView(binding.MAX, ut61e.isMax())
+        enableTextView(binding.DIODE, ut61e.isDiode())
+        enableTextView(binding.BEEP, ut61e.isBeep())
     }
 
     private fun enableTextView(v: View, enabled: Boolean) {

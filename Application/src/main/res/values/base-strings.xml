@@ -16,6 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">UT61E Toolkit</string>
-    <string name="log_folder">UT61E Logs</string>
+    <string name="app_name">UT61C Toolkit</string>
+    <string name="log_folder">UT61C Logs</string>
 </resources>

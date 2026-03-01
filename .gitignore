@@ -14,10 +14,7 @@ gen/
 out/
 
 # Gradle files
-gradlew
-gradlew.bat
 .gradle/
-gradle/
 build/
 
 # Local configuration file (sdk path, etc)
