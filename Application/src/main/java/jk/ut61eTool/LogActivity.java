@@ -38,6 +38,8 @@ import androidx.databinding.DataBindingUtil;
 
 import com.jake.UT61e_decoder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 import jk.ut61eTool.databinding.LogActivityBinding;
@@ -67,6 +69,9 @@ public class LogActivity extends Activity implements SharedPreferences.OnSharedP
     Alarms alarm;
     DataLogger logger;
     Converter conv;
+
+    private byte[] cont_data;
+    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -138,7 +143,11 @@ public class LogActivity extends Activity implements SharedPreferences.OnSharedP
                     updateConnectionState();
                     if (!connection_wanted) return;
                     byte[] extra = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA);
-                    decodeData(extra);
+                    try {
+                        decodeData(extra);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
 
@@ -249,18 +258,30 @@ public class LogActivity extends Activity implements SharedPreferences.OnSharedP
         return super.onOptionsItemSelected(item);
     }
 
-    private void decodeData(byte[] data) {
-        UT61e_decoder ut61e = new UT61e_decoder();
-        if (ut61e.parse(data)) {
+    private void decodeData(byte[] data) throws IOException {
+        // some meter firmware sends the 14‑byte record split into a
+        // 6‑byte chunk followed by a 2‑byte chunk; rebuild it here
+        if (data.length == 6) {
+            outputStream.write(data);
+            return;
+        }
+        if (data.length == 2) {
+            outputStream.write(data);
+            cont_data = outputStream.toByteArray();
+            UT61e_decoder ut61e = new UT61e_decoder();
+            if (!ut61e.parseAuto(cont_data)) {
+                outputStream.reset();
+                return;
+            }
 
             conv.adjust(ut61e);
-
             ui.update(ut61e);
 
             if (alarm.isAlarm(ut61e.getValue())) {
                 alarm.alarm(ut61e.toString());
             }
             if (conv.isIgnored(ut61e)) {
+                outputStream.reset();
                 return;
             }
 
@@ -268,6 +289,7 @@ public class LogActivity extends Activity implements SharedPreferences.OnSharedP
             graphUI.updateDataInfo();
 
             logger.logData(ut61e.toCSVString());
+            outputStream.reset();
         }
     }
 
