@@ -1,6 +1,6 @@
-Android UT61E Toolkit
+Android UT61C Toolkit
 ===================================
-App to display, analyze and log(csv) measurements for a UNI-T UT61E multimeter. Requires a bluetooth module mod, for example with a HM-11 Module.
+App to display, analyze and log(csv) measurements for a UNI-T UT61C multimeter. Requires a bluetooth module mod, for example with a HM-11 Module.
 
 Mod: https://blog.ja-ke.tech/multimeter/2018/03/09/UT61E-ble.html
 
